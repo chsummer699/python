@@ -14,6 +14,8 @@ while True:
 		temp.close()
 		line = linecache.getline("temp.txt",line_number)
 		print('========================================')
+		linecache.clearcache() 
+		# this step is very important,otherwise the line will always get the first read content
 		print line
 		print('========================================')
 		os.system("curl -i ")+ line[start:end]
