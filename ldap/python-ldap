@@ -1,0 +1,74 @@
+#!/usr/bin/env python
+# -*-coding:utf-8-*-
+
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
+import ldap
+import time
+USER = u'admin-user'
+PASSWORD = 'admin - password'
+LDAP_HOST = 'ldap://ldapserver'  //ldap port use default 389 ,if you use ssl,please change the port number!
+
+BASE_DN = u'search branch'
+BASE_USER = u',search branch' //convenient to construct the user ,while it's not necessary!
+ 
+ 
+class LDAPtool():
+    def __init__(self, user=None, password=None, ldap_host=None, base_dn=None):
+            if not ldap_host:
+                ldap_host = LDAP_HOST
+            if not base_dn:
+                self.base_dn = BASE_DN
+            if not user:
+                user = USER
+            else:
+                user = 'CN=' + user + BASE_USER
+            if not password:
+                password = PASSWORD
+            try:
+                self.ldapconn = ldap.initialize(ldap_host)//U can add port number here
+                self.ldapconn.simple_bind_s(user, password)
+                print u'connected success!'
+                print self.ldapconn  // for debug
+            except ldap.LDAPError, e:
+                print u'connected fail'
+                print e
+ 
+
+# user verification ,search LDAP using the user and password ,return a boolean value
+    def ldap_get_valid(self, uid=None, passwd=PASSWORD):
+        obj = self.ldapconn
+        target_cn = self.ldap_search_dn(uid)
+        if target_cn:
+            try:
+                if obj.simple_bind_s(target_cn, passwd):
+                    print 'username exist'
+                    return True
+                else:
+                    return False
+            except ldap.LDAPError, e:
+                print 'connection error'
+                print e
+        else:
+            print 'username none exist'
+ 
+
+//search dn of the user with username the form offered,one dn includes all information related to the user  
+    def ldap_search_dn(self, uid=None):
+        obj = self.ldapconn
+        obj.protocal_version = ldap.VERSION3
+        searchScope = ldap.SCOPE_SUBTREE
+        retrieveAttributes = None
+        searchFilter = "employeeID=" + uid //the employeeID is an example ,determined by ldap server construction
+        try:
+            ldap_result_id = obj.search(self.base_dn, searchScope, searchFilter, retrieveAttributes)
+            result_type, result_data = obj.result(ldap_result_id, 0)
+            if result_type == ldap.RES_SEARCH_ENTRY:
+                return result_data[0][0]
+            else:
+                return None
+        except ldap.LDAPError, e:
+            print e
+ldap_tool = LDAPtool()
+ldap_tool.ldap_get_valid('username', 'password') //Test
