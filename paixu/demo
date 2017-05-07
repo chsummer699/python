@@ -1,1 +1,27 @@
 # 子典型数据的排序，复杂排序
+ complex compare
+# for dictionary sample
+a = {'str1': 1, 'str3': 2, 'str2': 3}
+from operator import itemgetter
+c = sorted(a.iteritems(), key=itemgetter(0), reverse=False)
+
+# order by key
+c = sorted(a.iteritems(), key=lambda stu:stu[0], reverse=True)
+d = sorted(a, key=itemgetter(0), reverse=False)
+
+# for list sample
+students = [('john', 'A', 15), ('jane', 'B', 12), ('dave', 'B', 10)]
+stu = sorted(students, key=lambda student: student[2], reverse=False)
+stu2 = sorted(students, key=itemgetter(2), reverse=False)
+# print stu2
+
+from operator import  attrgetter
+# for complex dictionary sample
+# order by value
+e = {'john': {'grade': 'B', 'age': '11', 'sex': 'boy'}, 'TOM': {'grade': 'A', 'age': '15', 'sex': 'girl'},
+     'lucy': {'grade': 'C', 'age': '13', 'sex': 'girl'}}
+
+# c = sorted(e.iteritems(), key=itemgetter(0), reverse=True)
+
+c = sorted(e.iteritems(), key=lambda stu: stu[1]['age'], reverse=True)
+print c
